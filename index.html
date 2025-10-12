@@ -37,7 +37,7 @@
 
         try {
           const res = await fetch(
-            `https://efvdata-production.up.railway.app/api/players?fplId=${fplId}&amount=${amount}`
+            `https://efvdata-production.up.railway.app/api/players?fplId=${fplId}&topManagersCount=${amount}`
           );
           if (!res.ok) throw new Error('Failed to fetch data');
           const data = await res.json();
