@@ -12,23 +12,85 @@
       padding: 2rem;
       background: #fafafa;
     }
-    input, select, button {
-      margin: 0.5rem;
-      padding: 0.5rem;
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
     }
+
+    input, select, button {
+      margin: 0.5rem 0.5rem 0.5rem 0;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #115293;
+    }
+
     table {
       border-collapse: collapse;
       width: 100%;
       margin-top: 1rem;
       background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: block;
+      overflow-x: auto;
     }
+
     th, td {
       border: 1px solid #ddd;
       padding: 0.5rem;
       text-align: left;
+      white-space: nowrap;
+      cursor: default;
     }
+
     th {
       background-color: #f0f0f0;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tbody tr:hover {
+      background-color: #e0f7fa;
+    }
+
+    .owned-bar {
+      display: inline-block;
+      height: 10px;
+      background: #1976d2;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    th.sortable {
+      cursor: pointer;
+    }
+
+    th.sortable:hover {
+      background-color: #d0e9f7;
     }
   </style>
 </head>
@@ -42,6 +104,7 @@
       const [players, setPlayers] = React.useState([]);
       const [loading, setLoading] = React.useState(false);
       const [error, setError] = React.useState('');
+      const [sortAsc, setSortAsc] = React.useState(false); // sort direction
 
       const handleFetch = async () => {
         if (!fplId) {
@@ -58,7 +121,7 @@
           );
           if (!res.ok) throw new Error('Failed to fetch data');
           const data = await res.json();
-          setPlayers(data.players); // expects { players: [ { name, team, owned } ] }
+          setPlayers(data.players);
         } catch (e) {
           setError(e.message);
         } finally {
@@ -66,11 +129,17 @@
         }
       };
 
+      const handleSort = () => {
+        const sorted = [...players].sort((a, b) => sortAsc ? a.owned - b.owned : b.owned - a.owned);
+        setPlayers(sorted);
+        setSortAsc(!sortAsc);
+      };
+
       return (
         <div>
           <h1>Eredivisie Fantasy Stats</h1>
 
-          <div>
+          <div className="controls">
             <input
               type="text"
               placeholder="Enter FPL ID"
@@ -97,7 +166,9 @@
                   <th>#</th>
                   <th>Player</th>
                   <th>Team</th>
-                  <th>% Owned</th>
+                  <th className="sortable" onClick={handleSort}>
+                    % Owned {sortAsc ? '▲' : '▼'}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -106,7 +177,10 @@
                     <td>{i + 1}</td>
                     <td>{p.name}</td>
                     <td>{p.team}</td>
-                    <td>{p.owned}%</td>
+                    <td>
+                      <span className="owned-bar" style={{ width: `${p.owned}%` }}></span>
+                      {p.owned.toFixed(2)}%
+                    </td>
                   </tr>
                 ))}
               </tbody>
