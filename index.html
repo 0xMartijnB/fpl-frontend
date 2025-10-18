@@ -85,7 +85,7 @@
         const loadCaptains = async () => {
           try {
             const res = await fetch(
-              'https://gist.githubusercontent.com/0xMartijnB/6aea46b494a71f4d29097f8920c9d1e8/raw/bc46fa794f328b55b0d04a83af5e943dee708ad1/captains.json'
+              'https://gist.githubusercontent.com/0xMartijnB/6aea46b494a71f4d29097f8920c9d1e8/raw/captains.json'
             );
             if (!res.ok) throw new Error('Failed to load captains');
             const data = await res.json();
