@@ -7,18 +7,35 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #fafafa; }
-    input, select, button { margin: 0.5rem; padding: 0.5rem; }
-    table { border-collapse: collapse; width: 100%; margin-top: 1rem; background: white; }
-    th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; }
-    th { background-color: #f0f0f0; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #fafafa;
+    }
+    input, select, button {
+      margin: 0.5rem;
+      padding: 0.5rem;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 1rem;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
   <script type="text/babel">
-
     function App() {
       const [fplId, setFplId] = React.useState('');
       const [amount, setAmount] = React.useState('10000');
@@ -41,7 +58,7 @@
           );
           if (!res.ok) throw new Error('Failed to fetch data');
           const data = await res.json();
-          setPlayers(data);
+          setPlayers(data.players); // expects { players: [ { fpl_name, team, ownership } ] }
         } catch (e) {
           setError(e.message);
         } finally {
@@ -71,14 +88,15 @@
           </div>
 
           {loading && <p>Loading...</p>}
-          {error && <p style={{color: 'red'}}>{error}</p>}
+          {error && <p style={{ color: 'red' }}>{error}</p>}
 
           {players.length > 0 && (
             <table>
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Player Name</th>
+                  <th>Player</th>
+                  <th>Team</th>
                   <th>% Owned</th>
                 </tr>
               </thead>
@@ -86,8 +104,9 @@
                 {players.map((p, i) => (
                   <tr key={i}>
                     <td>{i + 1}</td>
-                    <td>{p.name}</td>
-                    <td>{p.owned}%</td>
+                    <td>{p.fpl_name}</td>
+                    <td>{p.team}</td>
+                    <td>{p.ownership}%</td>
                   </tr>
                 ))}
               </tbody>
