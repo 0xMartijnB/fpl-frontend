@@ -102,7 +102,7 @@
       // Initial load of captains
       useEffect(() => {
         fetchCaptains();
-      }, [topCount]); // reload captains if topCount changes
+      }, [topCount]);
 
       return (
         <div>
@@ -135,7 +135,7 @@
           {loadingPlayers && <p>Loading players...</p>}
           {playersError && <p style={{ color: 'red' }}>{playersError}</p>}
           {players.length > 0 && (
-            <>
+            <div>
               <h2>Most Selected Players</h2>
               <table>
                 <thead>
@@ -159,14 +159,14 @@
                     ))}
                 </tbody>
               </table>
-            </>
+            </div>
           )}
 
           {/* Captains Table */}
           {loadingCaptains && <p>Loading captains...</p>}
           {captainsError && <p style={{ color: 'red' }}>{captainsError}</p>}
           {captains.length > 0 && (
-            <>
+            <div>
               <h2>Top 10 Captains – Speelronde 9</h2>
               <table>
                 <thead>
@@ -188,7 +188,7 @@
                     ))}
                 </tbody>
               </table>
-            </>
+            </div>
           )}
         </div>
       );
