@@ -42,7 +42,7 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState } = React;
 
     function App() {
       const [fplId, setFplId] = useState('');
@@ -57,21 +57,28 @@
           setError('Please enter an FPL ID');
           return;
         }
+
         setError('');
         setLoading(true);
         setPlayers([]);
+        setCaptains([]);
 
         try {
-          const res = await fetch(
-            `https://efvdata-production.up.railway.app/api/players?fplId=${fplId}&topManagersCount=${amount}`
-          );
-          if (!res.ok) throw new Error('Failed to fetch data');
-          const data = await res.json();
-          if (data.players) {
-            setPlayers(data.players);
-          } else {
-            setError('No player data found');
-          }
+          // Fetch both endpoints at once
+          const [playersRes, captainsRes] = await Promise.all([
+            fetch(`https://efvdata-production.up.railway.app/api/players?fplId=${fplId}&topManagersCount=${amount}`),
+            fetch(`https://efvdata-production.up.railway.app/api/captains?topManagersCount=${amount}`)
+          ]);
+
+          if (!playersRes.ok) throw new Error('Failed to fetch players');
+          if (!captainsRes.ok) throw new Error('Failed to fetch captains');
+
+          const playersData = await playersRes.json();
+          const captainsData = await captainsRes.json();
+
+          if (playersData.players) setPlayers(playersData.players);
+          if (captainsData.captains) setCaptains(captainsData.captains);
+
         } catch (e) {
           setError(e.message);
           console.error(e);
@@ -79,23 +86,6 @@
           setLoading(false);
         }
       };
-
-      // Load captain data
-      useEffect(() => {
-        const loadCaptains = async () => {
-          try {
-            const res = await fetch(
-              'https://gist.githubusercontent.com/0xMartijnB/6aea46b494a71f4d29097f8920c9d1e8/raw/captains.json'
-            );
-            if (!res.ok) throw new Error('Failed to load captains');
-            const data = await res.json();
-            setCaptains(data.captains || []);
-          } catch (err) {
-            console.error('Error loading captains:', err);
-          }
-        };
-        loadCaptains();
-      }, []);
 
       return (
         <div>
@@ -141,7 +131,7 @@
                         <td>{i + 1}</td>
                         <td>{p.name}</td>
                         <td>{p.team}</td>
-                        <td>{p.owned}%</td>
+                        <td>{p.owned.toFixed(2)}%</td>
                       </tr>
                     ))}
                 </tbody>
@@ -165,7 +155,7 @@
                     <tr key={i}>
                       <td>{i + 1}</td>
                       <td>{c.name}</td>
-                      <td>{c.captained}%</td>
+                      <td>{c.captain_percent.toFixed(2)}%</td>
                     </tr>
                   ))}
                 </tbody>
