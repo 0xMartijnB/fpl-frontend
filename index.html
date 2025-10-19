@@ -70,14 +70,14 @@
           setLoading(true);
 
           try {
-            // 1️⃣ Players
+            // Players
             const playerRes = await fetch(
               `https://efvdata-production.up.railway.app/api/players?fplId=${id}&topManagersCount=${topCount}`
             );
             const playerData = await playerRes.json();
             setPlayers(playerData.players || []);
 
-            // 2️⃣ Captains
+            // Captains
             const captainRes = await fetch(
               `https://efvdata-production.up.railway.app/api/captains?topManagersCount=${topCount}`
             );
@@ -121,7 +121,7 @@
             {error && <p style={{ color: "red" }}>{error}</p>}
 
             {players.length > 0 && (
-              <>
+              <React.Fragment>
                 <h2>Most Selected Players</h2>
                 <table>
                   <thead>
@@ -143,11 +143,11 @@
                     ))}
                   </tbody>
                 </table>
-              </>
+              </React.Fragment>
             )}
 
             {captains.length > 0 && (
-              <>
+              <React.Fragment>
                 <h2>Top 10 Captains – Speelronde 9</h2>
                 <table>
                   <thead>
@@ -167,7 +167,7 @@
                     ))}
                   </tbody>
                 </table>
-              </>
+              </React.Fragment>
             )}
           </div>
         );
